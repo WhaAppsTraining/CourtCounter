@@ -19,12 +19,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         gameViewModel = ViewModelProviders.of(this).get(GameViewModel.class);
 
-        // start observing changes from observables and react accordingly
-        gameViewModel.getScoreTeamA().observe(this, score -> activityMainBinding.tvTeamAScore.setText(score));
-        gameViewModel.getScoreTeamB().observe(this, score -> activityMainBinding.tvTeamBScore.setText(score));
-        gameViewModel.getGameTitle().observe(this, gameTitle -> activityMainBinding.tvGameTitle.setText(gameTitle));
-        gameViewModel.getTeamAName().observe(this, name -> activityMainBinding.tvTeamAName.setText(name));
-        gameViewModel.getTeamBName().observe(this, name -> activityMainBinding.tvTeamBName.setText(name));
+        // TODO datanya masih engga sinkron,
+        // cari best practicenya realm dan update entity yang berupa POJO gimana
+        // start observing changes from observable and react accordingly
+        gameViewModel.getGameLiveData().observe(this, game -> {
+            if (game != null) {
+                activityMainBinding.tvTeamAScore.setText(String.valueOf(game.getScoreTeamA()));
+                activityMainBinding.tvTeamBScore.setText(String.valueOf(game.getScoreTeamB()));
+                activityMainBinding.tvGameTitle.setText(game.getTitle());
+                activityMainBinding.tvTeamAName.setText(game.getTeamAName());
+                activityMainBinding.tvTeamBName.setText(game.getTeamBName());
+            }
+        });
 
         // set click callbacks
         activityMainBinding.bTeamAPlus3.setOnClickListener(this);
@@ -32,11 +38,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         activityMainBinding.bTeamBPlus3.setOnClickListener(this);
         activityMainBinding.bTeamBPlus1.setOnClickListener(this);
         activityMainBinding.bReset.setOnClickListener(this);
-
-        // set team names and game title
-        gameViewModel.setGameTitle("August 18 Playoff");
-        gameViewModel.setTeamAName("Cupcake");
-        gameViewModel.setTeamBName("Donut");
     }
 
     @Override
